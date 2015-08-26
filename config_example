@@ -1,0 +1,14 @@
+#!/bin/bash
+#You should change the filename to 'config'
+#
+#Find out your diffrent networkservices: networksetup -listallnetworkservices
+networkservice="Wi-Fi"
+#Port you want to use:
+port="2202"
+#Location of control socket. Is used to close the connection
+socksname="/tmp/5d41402abc4b2a76b9719d911017c592"
+#Username on the server
+user="username"
+#Servername
+server="hostname.org"
+
