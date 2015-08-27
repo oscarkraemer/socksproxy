@@ -1,9 +1,31 @@
 #!/bin/bash
 source config
-networksetup -setsocksfirewallproxystate $networkservice on
-ssh -f -N -M -S $socksname -C -D $port $user\@$server 
-echo socket location: $socksname
-read -p "Press [Enter] to exit proxy..." 
-networksetup -setsocksfirewallproxystate $networkservice off
-ssh -S $socksname -O exit $user\@$server
+
+function socksStatus {
+    networksetup -getsocksfirewallproxy $networkservice |grep "Yes\|No"
+}
+
+case $1 in 
+    '')
+        socksStatus
+        ;;
+
+    -s|--start)
+        networksetup -setsocksfirewallproxystate $networkservice on
+        ssh -f -N -M -S $socksname -C -D $port $user\@$server
+        networksetup -getsocksfirewallproxy $networkservice
+        ;;
+
+    -e|--end)
+        networksetup -setsocksfirewallproxystate $networkservice off
+        ssh -S $socksname -O exit $user\@$server
+        networksetup -getsocksfirewallproxy $networkservice
+        ;;
+    --status)
+        networksetup -getsocksfirewallproxy $networkservice
+        ;;
+
+
+esac
+
 
