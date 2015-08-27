@@ -1,0 +1,13 @@
+#You should change the filename to 'config'
+#
+#Find out your diffrent networkservices: networksetup -listallnetworkservices
+networkservice="test Wi-Fi"
+#Port you want to use:
+port="1234"
+#Location of control socket. Is used to close the connection
+socksname="/tmp/socks-test"
+#Username on the server
+user="username"
+#Servername
+server="hostname.org"
+

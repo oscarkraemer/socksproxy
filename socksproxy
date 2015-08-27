@@ -1,0 +1,94 @@
+#!/bin/bash
+#source config
+conffolder="conf/"
+defaultsettings="default"
+function socksStatus {
+echo $networkservice $(networksetup -getsocksfirewallproxy $networkservice |grep "Yes\|No")
+}
+function loadSettings {
+    
+    if [[ -z "$1" ]] ; then
+        settingsfile=$conffolder$defaultsettings
+    else
+        settingsfile=$conffolder$1
+    fi
+
+    if [ ! -f $settingsfile ]; then
+        echo Setting file: $settingsfile not found. Exiting applicatione.
+        exit 
+    fi
+
+    source $settingsfile
+
+}
+
+case $1 in 
+    '')
+        #$1 doesn't work because $1 is empty
+        loadSettings $1
+        socksStatus
+        ;;
+
+    -s|--start)
+        loadSettings $2
+        networksetup -setsocksfirewallproxystate $networkservice on
+        ssh -f -N -M -S $socksname -C -D $port $user\@$server
+        networksetup -getsocksfirewallproxy $networkservice
+        ;;
+
+    -e|--end)
+        loadSettings $2
+        networksetup -setsocksfirewallproxystate $networkservice off
+        ssh -S $socksname -O exit $user\@$server
+        networksetup -getsocksfirewallproxy $networkservice
+        ;;
+
+    --status)
+        loadSettings $2
+        networksetup -getsocksfirewallproxy $networkservice
+        ;;
+    -t)
+        echo $1 $2
+        loadSettings $2
+        echo $networkservice $user $server $sockname $port
+        ;; 
+    -h|--help)
+        clear
+        cat <<-END
+SOCKSPORXY
+    socksproxy - creates socks proxy through ssh tunnel
+
+SYNOPSIS
+    socksproxy [--start socket] [-end socket] [--status socket] [--help
+
+DESCRIPTION
+    Socksproxy is used to set up a ssh tunnel and to create a system wide SOCKS proxy connection to that server.
+
+    This sctipt is tested on Mac OS X 10.10.5
+
+    The followin options are available
+
+    -h --help
+            Prints this help
+
+    -e connection , --end connection
+            Ends astablished connection
+
+    -s connection , -- start connection
+            Starts a new connection
+
+    --status connection
+            Shows the status of the connections
+        
+    -t
+            This option is for testing porpuses and will be changing
+        
+END
+
+
+        ;;
+    *)
+        echo -e "And then I go and spoil it all,\nBy saying something stupid\nLike '$@'."
+esac
+
+
