@@ -31,7 +31,7 @@ case $1 in
 
     -s|--start)
         loadSettings $2
-        networksetup -setsocksfirewallproxystate $networkservice on
+        networksetup -setsocksfirewallproxy $networkservice localhost $port
         ssh -f -N -M -S $socksname -C -D $port $user\@$server
         networksetup -getsocksfirewallproxy $networkservice
         ;;
